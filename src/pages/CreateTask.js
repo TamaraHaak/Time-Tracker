@@ -2,14 +2,13 @@ import React, { useState } from "react";
 import { AiOutlineFieldTime } from "react-icons/ai";
 import { useNavigate } from "react-router-dom";
 import { addDoc, collection, getFirestore } from "firebase/firestore";
-import {auth,  firestore } from '../firebase/config';
+import { getAuth } from "firebase/auth";
+import app from "../firebase/config";
 
-
-import { updateDoc, getDoc, serverTimestamp } from 'firebase/firestore';
 //Instance of firestore
-const db = getFirestore();
+const db = getFirestore(app);
 //instance of auth
-
+const auth = getAuth(app);
 
 function CreateTaskPage() {
   const [task, setTask] = useState("");

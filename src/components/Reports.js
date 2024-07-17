@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
 import { AiOutlineLogout } from "react-icons/ai";
-import { firestore } from '../firebase/config';
 import { getAuth } from "firebase/auth";
 import {
   startOfWeek,
@@ -25,7 +24,7 @@ import app from "../firebase/config";
 //Auth instance
 const auth = getAuth(app);
 //Database instance
-const db = getFirestore();
+const db = getFirestore(app);
 
 function Reports() {
   //Local state

@@ -8,12 +8,13 @@ import 'firebase/firestore';
 
 
 const firebaseConfig = {
-  apiKey: "AIzaSyCjVL0NpzAtbVzJ4XzYS9CIXC_YIc809dI",
-  authDomain: "time-tracker-app-fa03a.firebaseapp.com",
-  projectId: "time-tracker-app-fa03a",
-  storageBucket: "time-tracker-app-fa03a.appspot.com",
-  messagingSenderId: "886289214070",
-  appId: "1:886289214070:web:51c187ba3dd2298cfecd57",
+  apiKey: "AIzaSyAk85QRsnMQ3wzOYjxETBV2-zMkIjndi30",
+  authDomain: "time-tracker-app-265ce.firebaseapp.com",
+  databaseURL: "https://time-tracker-app-265ce-default-rtdb.firebaseio.com",
+  projectId: "time-tracker-app-265ce",
+  storageBucket: "time-tracker-app-265ce.appspot.com",
+  messagingSenderId: "327323582622",
+  appId: "1:327323582622:web:123e7a681dbb5ee77afb8f"
 };
 
 // Initialize Firebase

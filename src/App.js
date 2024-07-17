@@ -6,6 +6,7 @@ import CreateTaskPage from "./pages/CreateTask";
 import Reports from "./components/Reports";
 import PrivateRoute from "./components/PrivateRoute";
 import SubmitReview from './components/SubmitReview';
+import TaskManager from "./components/TaskManager";
 
 function App() {
   return (
@@ -14,17 +15,14 @@ function App() {
         <Route path="/" element={<Homepage />} />
         <Route path="/login" element={<Login />} />
         <Route path="/create-task" element={<CreateTaskPage />} />
-        <Route path="/submit-review/:id" component={SubmitReview} />
-        <Route
-          path="/reports"
-          element={
-            <PrivateRoute>
-              <Reports />
-            </PrivateRoute>
-          }
-        />
+        <Route path="/submit-review/:id" element={<SubmitReview />} />
+       { /*<Route path="/tasks" element={<TaskManager />} />*/}
+        <Route path="/reports" element={
+          <PrivateRoute>
+            <Reports />
+          </PrivateRoute>
+        } />
       </Routes>
-      {/* Footer */}
       <Footer />
     </BrowserRouter>
   );
