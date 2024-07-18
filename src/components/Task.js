@@ -1,146 +1,25 @@
-import React, { useState } from "react";
-import { getFirestore, updateDoc, onSnapshot, doc, deleteDoc } from "firebase/firestore";
-import { BsCircleFill } from "react-icons/bs";
-import { format } from "date-fns";
-import { AiOutlineEdit, AiOutlineDelete, AiOutlineCalendar, AiOutlinePlayCircle, AiOutlinePauseCircle, AiOutlineReload } from "react-icons/ai";
-import { FaCheck, FaTimes } from "react-icons/fa";
-import app from "../firebase/config";
+import React from 'react';
+import { AiOutlinePauseCircle, AiOutlineReload, AiOutlineCalendar, AiOutlineEdit, AiOutlineDelete } from 'react-icons/ai';
+import { BsCircleFill } from 'react-icons/bs';
+import { format } from 'date-fns';
 
-// Instance of Firestore
-const db = getFirestore(app);
+const Task = ({ localTask, handlePause, handleStart, handleEdit, handleDelete }) => {
+  console.log('Received task:', localTask);
 
-function Task({ task }) {
-  console.log("Received task:", task);
-
-  // Проверка наличия задачи
-  if (!task || !task.task) {
-    console.error("Task or task.task is missing:", task);
-    return <div>Нет доступной задачи</div>;
+  if (!localTask || !localTask.task) {
+    console.error('Task or task.task is missing:', localTask);
+    return <div className="bg-red-100 p-4 rounded-md text-black shadow-lg">Invalid task data</div>;
   }
 
-  // Local state
-  const [localTask, setLocalTask] = useState(task);
-  const [isEditing, setIsEditing] = useState(false);
-  const [newTaskDescription, setNewTaskDescription] = useState(task.task);
+  const renderTaskDescription = () => (
+    <div>
+      <h3 className="font-bold text-xl">{localTask.task || 'No title'}</h3>
+      <p className="text-gray-600">{localTask.description || 'No description'}</p>
+    </div>
+  );
 
-  // Handle Edit
-  const handleEdit = () => {
-    setIsEditing(true);
-  };
-
-  // Handle cancel Edit
-  const handleCancelEdit = () => {
-    setIsEditing(false);
-    setNewTaskDescription(localTask.task);
-  };
-
-  // Handle Update
-  const handleUpdate = async () => {
-    try {
-      await updateDoc(doc(db, "tasks", localTask.id), {
-        task: newTaskDescription,
-      });
-      // Update the state
-      setLocalTask((prevState) => ({ ...prevState, task: newTaskDescription }));
-      setIsEditing(false);
-    } catch (error) {
-      console.log("Error updating task:", error);
-    }
-  };
-
-  // Handle renderTaskDescription
-  const renderTaskDescription = () => {
-    if (isEditing) {
-      return (
-        <div className="flex space-x-2">
-          <input
-            value={newTaskDescription}
-            onChange={(e) => setNewTaskDescription(e.target.value)}
-            className="border border-purple-300 rounded px-2 py-1"
-          />
-          <FaCheck
-            onClick={handleUpdate}
-            className="text-green-400 cursor-pointer"
-          />
-          <FaTimes
-            onClick={handleCancelEdit}
-            className="text-red-400 cursor-pointer"
-          />
-        </div>
-      );
-    }
-
-    return <p className="text-gray-600">{localTask.task}</p>;
-  };
-
-  // Handle start
-  const handleStart = async () => {
-    try {
-      await updateDoc(doc(db, "tasks", localTask.id), {
-        status: "in_progress",
-        startTime: Date.now(),
-      });
-      const taskDoc = doc(db, "tasks", localTask.id);
-      onSnapshot(taskDoc, (docSnap) => {
-        if (docSnap.exists()) {
-          setLocalTask({
-            ...docSnap.data(),
-            date: localTask.date,
-            id: localTask.id,
-          });
-        }
-      });
-    } catch (error) {
-      console.log("Error starting task:", error);
-    }
-  };
-
-  // Handle pause
-  const handlePause = async () => {
-    try {
-      const elapsed = localTask.startTime ? Date.now() - localTask.startTime : 0;
-      const newTotalTime = (localTask.totalTime || 0) + elapsed;
-      await updateDoc(doc(db, "tasks", localTask.id), {
-        status: "paused",
-        endTime: Date.now(),
-        totalTime: newTotalTime,
-      });
-      const taskDoc = doc(db, "tasks", localTask.id);
-      onSnapshot(taskDoc, (docSnap) => {
-        if (docSnap.exists()) {
-          setLocalTask({
-            ...docSnap.data(),
-            date: localTask.date,
-            id: localTask.id,
-          });
-        }
-      });
-    } catch (error) {
-      console.log("Error pausing task:", error);
-    }
-  };
-
-  // Handle delete
-  const handleDelete = async () => {
-    try {
-      await deleteDoc(doc(db, "tasks", localTask.id));
-      alert("Task Deleted successfully");
-    } catch (error) {
-      alert("Task Deletion failed");
-    }
-  };
-
-  // Handle render buttons
   const handleRenderButtons = () => {
     switch (localTask.status) {
-      case "unstarted":
-        return (
-          <AiOutlinePlayCircle
-            className="text-2xl text-purple-400 cursor-pointer"
-            onClick={handleStart}
-          />
-        );
-
       case "in_progress":
         return (
           <AiOutlinePauseCircle
@@ -148,8 +27,8 @@ function Task({ task }) {
             onClick={handlePause}
           />
         );
-
       default:
+      case "unstarted":
         return (
           <AiOutlineReload
             className="text-2xl text-green-400 cursor-pointer"
@@ -159,17 +38,15 @@ function Task({ task }) {
     }
   };
 
-  // Форматирование даты
-  const formattedDate = task.date ? format(new Date(task.date), "do MMM yyyy") : "Invalid date";
-
   return (
     <div className="bg-white p-4 rounded-md text-black shadow-lg flex flex-col md:flex-row md:items-center justify-between">
       <div className="md:space-x-2 space-y-2 md:space-y-0">
-        {/* Render description */}
         {renderTaskDescription()}
         <div className="flex items-center space-x-2">
           <AiOutlineCalendar className="text-gray-600" />
-          <p className="text-gray-600">{formattedDate}</p>
+          <p className="text-gray-600">
+            {localTask.date ? format(new Date(localTask.date), "do MMM yyyy") : 'No date'}
+          </p>
         </div>
       </div>
       <div className="flex items-center space-x-2 justify-center">
@@ -185,7 +62,6 @@ function Task({ task }) {
         <p>{localTask.status}</p>
       </div>
       <div className="flex items-center space-x-2 justify-center md:justify-end">
-        {/* Render buttons */}
         {handleRenderButtons()}
         <AiOutlineEdit
           onClick={handleEdit}
