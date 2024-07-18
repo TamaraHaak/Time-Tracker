@@ -16,7 +16,7 @@ function App() {
         <Route path="/login" element={<Login />} />
         <Route path="/create-task" element={<CreateTaskPage />} />
         <Route path="/submit-review/:id" element={<SubmitReview />} />
-       { /*<Route path="/tasks" element={<TaskManager />} />*/}
+        <Route path="/tasks" element={<TaskManager />} />
         <Route path="/reports" element={
           <PrivateRoute>
             <Reports />

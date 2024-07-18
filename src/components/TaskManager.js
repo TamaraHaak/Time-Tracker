@@ -1,68 +1,36 @@
-import React, { useState, useEffect } from 'react';
-import { auth, firestore } from '../firebase/config';
-import { collection, query, where, getDocs } from "firebase/firestore";
-import Task from './Task';
+import React, { useEffect, useState } from "react";
+import { getFirestore, collection, query, where, onSnapshot } from "firebase/firestore";
+import Task from "./Task";
+import app from "../firebase/config";
+
+// Instance of Firestore
+const db = getFirestore(app);
 
 const TaskManager = () => {
-  const [user, setUser] = useState(null);
   const [tasks, setTasks] = useState([]);
-  const [error, setError] = useState('');
+  const userId = "PrPqv9ZXUpMqS9RAHNcgRVEyF133"; // Ваш пользовательский ID
 
   useEffect(() => {
-    const unsubscribe = auth.onAuthStateChanged((user) => {
-      setUser(user);
-      if (user) {
-        console.log('User signed in:', user.uid);
-        fetchTasks(user.uid);
-      } else {
-        console.log('No user is signed in');
-      }
+    const q = query(collection(db, "tasks"), where("userId", "==", userId));
+    const unsubscribe = onSnapshot(q, (querySnapshot) => {
+      const tasksData = [];
+      querySnapshot.forEach((doc) => {
+        tasksData.push({ ...doc.data(), id: doc.id });
+      });
+      console.log("Fetched tasks:", tasksData); // Лог для отладки
+      setTasks(tasksData);
     });
 
     return () => unsubscribe();
-  }, [unsubscribe]);
-
-  const fetchTasks = async (userId) => {
-    try {
-      console.log('Fetching tasks for user:', userId);
-      const tasksRef = collection(firestore, 'tasks');
-      const q = query(tasksRef, where('userId', '==', userId));
-      const snapshot = await getDocs(q);
-      if (snapshot.empty) {
-        console.log('No matching documents.');
-        setTasks([]);
-        return;
-      }
-      const tasks = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-      console.log('Fetched tasks:', tasks);
-      setTasks(tasks);
-    } catch (error) {
-      console.error('Error fetching tasks:', error.message);
-      setError('Error fetching tasks: ' + error.message);
-    }
-  };
+  }, [userId]);
 
   return (
     <div>
       <h1>Task Manager</h1>
-      {error && <p style={{ color: 'red' }}>{error}</p>}
-      {user ? (
-        tasks.length > 0 ? (
-          tasks.map(task => (
-            <Task
-              key={task.id}
-              localTask={task}
-              handlePause={() => {}}
-              handleStart={() => {}}
-              handleEdit={() => {}}
-              handleDelete={() => {}}
-            />
-          ))
-        ) : (
-          <p>No tasks found</p>
-        )
+      {tasks.length > 0 ? (
+        tasks.map((task) => <Task key={task.id} task={task} />)
       ) : (
-        <p>Please sign in to manage your tasks.</p>
+        <div>Нет доступной задачи</div>
       )}
     </div>
   );

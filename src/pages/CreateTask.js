@@ -2,43 +2,44 @@ import React, { useState } from "react";
 import { AiOutlineFieldTime } from "react-icons/ai";
 import { useNavigate } from "react-router-dom";
 import { addDoc, collection, getFirestore } from "firebase/firestore";
-import { getAuth } from "firebase/auth";
-import app from "../firebase/config";
+import { auth, firestore } from '../firebase/config';
 
-//Instance of firestore
-const db = getFirestore(app);
-//instance of auth
-const auth = getAuth(app);
-
-function CreateTaskPage() {
+const CreateTaskPage = () => {
   const [task, setTask] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
-  const [success, setsuccess] = useState(false);
+  const [success, setSuccess] = useState(false);
   const navigate = useNavigate();
 
   //Create task handler
   const handleSubmit = async (event) => {
     event.preventDefault();
+    setLoading(true);
+    setError("");
+    setSuccess(false);
+
     try {
-      setLoading(true);
-      setError("");
-      setsuccess(false);
-      //save task into DB
-      addDoc(collection(db, "tasks"), {
+      const db = getFirestore();
+      await addDoc(collection(db, "tasks"), {
         task: task.trim(),
         status: "unstarted",
         startTime: null,
         endTime: null,
         userId: auth.currentUser.uid,
+        createdAt: new Date(),
       });
-      setsuccess(true);
+      setSuccess(true);
       setTask("");
-      // navigate("/reports");
+      setTimeout(() => {
+        navigate("/tasks");
+      }, 1500);
     } catch (error) {
-      setError("Error adding task:" + error.message);
+      setError("Error adding task: " + error.message);
+    } finally {
+      setLoading(false);
     }
   };
+
   return (
     <div className="bg-gradient-to-r from-blue-500 via-indigo-500 to-purple-500 min-h-screen flex items-center justify-center">
       <div className="bg-white bg-opacity-10 p-10 rounded-lg backdrop-filter backdrop-blur-lg shadow-lg max-w-md w-full">
@@ -47,8 +48,7 @@ function CreateTaskPage() {
           <span>Create a new task</span>
         </h1>
         <p className="text-white text-opacity-80 mb-8">
-          Turn your plans into achievable tasks. Start by naming your task
-          below.
+          Turn your plans into achievable tasks. Start by naming your task below.
         </p>
         <form onSubmit={handleSubmit}>
           <div className="mb-8">
@@ -81,7 +81,7 @@ function CreateTaskPage() {
           {error && <p className="text-red-500 text-sm mt-2">{error}</p>}
           {success && (
             <p className="text-green-500 text-sm mt-2">
-              Task created successfully
+              Task created successfully. Redirecting...
             </p>
           )}
         </form>
