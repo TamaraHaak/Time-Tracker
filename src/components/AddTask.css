@@ -1,0 +1,14 @@
+.task-container {
+    margin-bottom: 20px;
+    padding: 10px;
+    border: 1px solid  #e0a312;
+    border-radius: 8px;
+    background-color: #e0a312;
+  }
+  
+  .review-container {
+    margin-top: 10px;
+    padding: 10px;
+    border-top: 1px solid #d99e27;
+    border-radius: 1px solid black;
+  }

@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import { getAuth } from 'firebase/auth';
 import { getFirestore, collection, addDoc, doc, updateDoc, getDoc, serverTimestamp, increment, orderBy, limit, query, getDocs } from 'firebase/firestore';
 import { set, ref, getDatabase } from 'firebase/database';
-import { firestore } from '../firebase/config';
 
 function SubmitReview({ revieweeId }) {
   const [rating, setRating] = useState(0);

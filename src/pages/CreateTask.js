@@ -2,10 +2,17 @@ import React, { useState } from "react";
 import { AiOutlineFieldTime } from "react-icons/ai";
 import { useNavigate } from "react-router-dom";
 import { addDoc, collection, getFirestore } from "firebase/firestore";
-import { auth, firestore } from '../firebase/config';
+import { getAuth } from "firebase/auth";
+import app from "../firebase/config";
 
-const CreateTaskPage = () => {
+//Instance of firestore
+const db = getFirestore(app);
+//instance of auth
+const auth = getAuth(app);
+
+function CreateTaskPage() {
   const [task, setTask] = useState("");
+  const [category, setCategory] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [success, setSuccess] = useState(false);
@@ -14,25 +21,25 @@ const CreateTaskPage = () => {
   //Create task handler
   const handleSubmit = async (event) => {
     event.preventDefault();
-    setLoading(true);
-    setError("");
-    setSuccess(false);
-
     try {
-      const db = getFirestore();
+      setLoading(true);
+      setError("");
+      setSuccess(false);
+      // save task into DB
+      const createdAt = new Date();
       await addDoc(collection(db, "tasks"), {
         task: task.trim(),
+        category: category.trim(),
         status: "unstarted",
         startTime: null,
         endTime: null,
         userId: auth.currentUser.uid,
-        createdAt: new Date(),
+        createdAt: createdAt,
       });
       setSuccess(true);
       setTask("");
-      setTimeout(() => {
-        navigate("/tasks");
-      }, 1500);
+      setCategory("");
+      navigate("/reports");
     } catch (error) {
       setError("Error adding task: " + error.message);
     } finally {
@@ -69,6 +76,24 @@ const CreateTaskPage = () => {
               }}
             />
           </div>
+          <div className="mb-8">
+            <label htmlFor="category" className="block font-bold text-white mb-2">
+              Category
+            </label>
+            <input
+              type="text"
+              id="category"
+              required
+              value={category}
+              onChange={(e) => setCategory(e.target.value)}
+              className="w-full bg-transparent bg-opacity-50 text-white border border-gray-300 rounded px-4 py-2 focus:outline-none focus:ring-2 focus:ring-white placeholder-white"
+              placeholder="e.g. Work"
+              style={{
+                color: "white",
+                textShadow: "0 0 10px rgba(0,0,0,0.25)",
+              }}
+            />
+          </div>
           <div className="flex justify-end">
             <button
               disabled={loading}
@@ -81,13 +106,13 @@ const CreateTaskPage = () => {
           {error && <p className="text-red-500 text-sm mt-2">{error}</p>}
           {success && (
             <p className="text-green-500 text-sm mt-2">
-              Task created successfully. Redirecting...
-            </p>
-          )}
-        </form>
-      </div>
+            Task created successfully
+          </p>
+        )}
+      </form>
     </div>
-  );
+  </div>
+);
 }
 
 export default CreateTaskPage;

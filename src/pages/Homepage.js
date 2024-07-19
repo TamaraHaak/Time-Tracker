@@ -2,8 +2,6 @@ import React from "react";
 import { Link } from "react-router-dom";
 import task from "../images/task.png";
 import work from "../images/work.png";
-
-
 const Homepage = () => {
   return (
     <div>
@@ -68,7 +66,7 @@ const Homepage = () => {
           <div className="navbar-backdrop fixed inset-0 backdrop-blur-xl backdrop-filter bg-gray-900 bg-opacity-80" />
         </div>
       </section>
-      {/* How it works */ }
+      {/* How it works */}
       <section className="relative pt-16 lg:pb-16 bg-gray-50 overflow-hidden">
         <img
           className="hidden lg:block absolute top-0 right-0 h-full w-1/2 object-cover"
@@ -198,7 +196,7 @@ const Homepage = () => {
             </div>
           </div>
         </div>
-       
+      
       </section>
     </div>
   );

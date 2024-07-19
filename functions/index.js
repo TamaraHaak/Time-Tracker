@@ -2,19 +2,27 @@ const functions = require('firebase-functions');
 const admin = require('firebase-admin');
 admin.initializeApp();
 
-exports.dailyUserCleanup = functions.pubsub.schedule('every 24 hours').onRun(async (context) => {
-  const topUsersSnapshot = await admin.database().ref('topUsers').once('value');
-  const topUserIds = Object.keys(topUsersSnapshot.val());
+exports.scheduledFunction = functions.pubsub.schedule('every 24 hours').onRun(async (context) => {
+  const db = admin.firestore();
+  const usersRef = db.collection('users');
+  
+  // Get top 10 users
+  const topUsersSnapshot = await usersRef.orderBy('averageRating', 'desc').limit(10).get();
+  const topUsersIds = topUsersSnapshot.docs.map(doc => doc.id);
 
-  const usersSnapshot = await admin.firestore().collection('users').get();
-  const batch = admin.firestore().batch();
+  // Get all users
+  const allUsersSnapshot = await usersRef.get();
+  const allUsersIds = allUsersSnapshot.docs.map(doc => doc.id);
 
-  usersSnapshot.forEach(doc => {
-    if (!topUserIds.includes(doc.id)) {
-      batch.delete(doc.ref);
-    }
+  // Filter out top users
+  const usersToDelete = allUsersIds.filter(id => !topUsersIds.includes(id));
+
+  // Delete users
+  const batch = db.batch();
+  usersToDelete.forEach(userId => {
+    batch.delete(usersRef.doc(userId));
   });
 
   await batch.commit();
-  console.log('Deleted all users except top 10');
+  console.log('Deleted users except top 10');
 });

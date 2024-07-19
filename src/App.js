@@ -1,3 +1,4 @@
+import React from "react";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Homepage from "./pages/Homepage";
 import Footer from "./components/Footer";
@@ -6,8 +7,6 @@ import CreateTaskPage from "./pages/CreateTask";
 import Reports from "./components/Reports";
 import PrivateRoute from "./components/PrivateRoute";
 
-
-
 function App() {
   return (
     <BrowserRouter>
@@ -15,14 +14,16 @@ function App() {
         <Route path="/" element={<Homepage />} />
         <Route path="/login" element={<Login />} />
         <Route path="/create-task" element={<CreateTaskPage />} />
-      
-        
-        <Route path="/reports" element={
-          <PrivateRoute>
-            <Reports />
-          </PrivateRoute>
-        } />
+        <Route
+          path="/reports"
+          element={
+            <PrivateRoute>
+              <Reports />
+            </PrivateRoute>
+          }
+        />
       </Routes>
+      {/* Footer */}
       <Footer />
     </BrowserRouter>
   );

@@ -11,13 +11,15 @@ const AddTask = ({ addTaskToList }) => {
     e.preventDefault();
     try {
       const db = getFirestore();
+      const createdAt = new Date();
       const docRef = await addDoc(collection(db, 'tasks'), {
         task,
         category,
         userId: auth.currentUser.uid,
-        createdAt: new Date(),
+        status: 'unstarted',
+        createdAt: createdAt,
       });
-      addTaskToList({ id: docRef.id, task, category, userId: auth.currentUser.uid, createdAt: new Date() });
+      addTaskToList({ id: docRef.id, task, category, userId: auth.currentUser.uid, status: 'unstarted', createdAt: createdAt });
       setTask('');
       setCategory('');
     } catch (error) {
@@ -26,11 +28,25 @@ const AddTask = ({ addTaskToList }) => {
   };
 
   return (
-    <form onSubmit={handleSubmit}>
-      <input type="text" value={task} onChange={(e) => setTask(e.target.value)} placeholder="Task" required />
-      <input type="text" value={category} onChange={(e) => setCategory(e.target.value)} placeholder="Category" required />
-      <button type="submit">Add Task</button>
-      {error && <p>{error}</p>}
+    <form onSubmit={handleSubmit} className="bg-white p-4 rounded-md shadow-md">
+      <input
+        type="text"
+        value={task}
+        onChange={(e) => setTask(e.target.value)}
+        placeholder="Task"
+        required
+        className="border p-2 rounded w-full mb-2"
+      />
+      <input
+        type="text"
+        value={category}
+        onChange={(e) => setCategory(e.target.value)}
+        placeholder="Category"
+        required
+        className="border p-2 rounded w-full mb-2"
+      />
+      <button type="submit" className="bg-blue-500 text-white p-2 rounded w-full">Add Task</button>
+      {error && <p className="text-red-500 mt-2">{error}</p>}
     </form>
   );
 };
