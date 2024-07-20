@@ -11,6 +11,7 @@ import { useNavigate } from "react-router-dom";
 import { FcGoogle } from "react-icons/fc";
 import app from "../firebase/config";
 
+
 //Auth instance
 const auth = getAuth(app);
 //Google login
@@ -28,7 +29,9 @@ const Login = () => {
   //----------
   //Register
   //----------
-  const signUp = async () => {
+  const signUp = async (e) => {
+    e.preventDefault();
+    setError(" ");
     setRegisterLoading(true);
     setError(null);
     try {
@@ -43,7 +46,9 @@ const Login = () => {
   //----------
   //Login
   //----------
-  const logIn = async () => {
+  const logIn = async (e) => {
+    e.preventDefault();
+    setError(" ");
     setLoginLoading(true);
     setError(null);
     try {
@@ -61,6 +66,7 @@ const Login = () => {
   //Google login
   //----------
   const googleSignIn = async () => {
+    
     setLoginLoading(true);
     setError(null);
     try {

@@ -1,5 +1,7 @@
 const functions = require('firebase-functions');
 const admin = require('firebase-admin');
+
+
 admin.initializeApp();
 
 exports.scheduledFunction = functions.pubsub.schedule('every 24 hours').onRun(async (context) => {

@@ -1,3 +1,4 @@
+
 import React, { useState } from "react";
 import {
   getFirestore,
@@ -23,16 +24,19 @@ import app from "../firebase/config";
 // instance of firestore
 const db = getFirestore(app);
 
-function Task({ task, handleDelete, handlePause, handleStart }) {
+function Task({ task,  handleDelete, handlePause, handleStart }) {
   // Local state
   const [localTask, setLocalTask] = useState(task);
   const [isEditing, setIsEditing] = useState(false);
   const [newTaskDescription, setNewTaskDescription] = useState(task ? task.task : "");
-  const [newStartTime, setNewStartTime] = useState(localTask.startTime ? new Date(localTask.startTime.seconds * 1000).toISOString().slice(0, 16) : '');
-  const [newEndTime, setNewEndTime] = useState(localTask.endTime ? new Date(localTask.endTime.seconds * 1000).toISOString().slice(0, 16) : '');
+
+  const [newStartTime, setNewStartTime] = useState(localTask.startTime && localTask.startTime.seconds ? new Date(localTask.startTime.seconds * 1000).toISOString().slice(0, 16) : '');
+  const [newEndTime, setNewEndTime] = useState(localTask.endTime && localTask.endTime.seconds ? new Date(localTask.endTime.seconds * 1000).toISOString().slice(0, 16) : '');
 
   if (!task || !task.task) {
-    return <div className="text-red-500">Task data is not available or corrupted</div>;
+    return <div className="text-red-500">Task data is not available or corrupted
+    <p>Start Time: {newStartTime}</p>
+    </div>;
   }
 
   // Handle Edit

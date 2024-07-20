@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import { getAuth } from 'firebase/auth';
 import { getFirestore, collection, addDoc, doc, updateDoc, getDoc, serverTimestamp, increment, orderBy, limit, query, getDocs } from 'firebase/firestore';
 import { set, ref, getDatabase } from 'firebase/database';
+import { firestore } from '../firebase/config';
+import './SubmitReview.css';
 
 function SubmitReview({ revieweeId }) {
   const [rating, setRating] = useState(0);
@@ -34,21 +36,42 @@ function SubmitReview({ revieweeId }) {
     const userDoc = await getDoc(userRef);
     const userData = userDoc.data();
 
-    await updateDoc(userRef, {
-      reviewCount: increment(1),
-      averageRating: ((userData.averageRating * userData.reviewCount) + rating) / (userData.reviewCount + 1)
-    });
+    if (userData) {
+      const currentAverageRating = userData.averageRating || 0;
+      const currentReviewCount = userData.reviewCount || 0;
 
-    // Update top users
-    updateTopUsers();
+      await updateDoc(userRef, {
+        reviewCount: increment(1),
+        averageRating: ((currentAverageRating * currentReviewCount) + rating) / (currentReviewCount + 1)
+      });
+
+      // Update top users
+      updateTopUsers();
+    } else {
+      console.error("User data is missing or invalid.");
+    }
   };
 
   return (
-    <form onSubmit={submitReview}>
-      <input type="number" value={rating} onChange={(e) => setRating(e.target.value)} required />
-      <textarea value={reviewText} onChange={(e) => setReviewText(e.target.value)} required></textarea>
-      <button type="submit">Submit Review</button>
-    </form>
+    <div className="submit-review">
+      <h2>Submit Review</h2>
+      <form onSubmit={submitReview}>
+        <input
+          type="number"
+          value={rating}
+          onChange={(e) => setRating(e.target.value)}
+          placeholder="Rating (0-5)"
+          required
+        />
+        <textarea
+          value={reviewText}
+          onChange={(e) => setReviewText(e.target.value)}
+          placeholder="Write your review..."
+          required
+        ></textarea>
+        <button type="submit">Submit Review</button>
+      </form>
+    </div>
   );
 }
 

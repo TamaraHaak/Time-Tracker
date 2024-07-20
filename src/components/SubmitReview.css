@@ -1,0 +1,49 @@
+.submit-review {
+    background: linear-gradient(to right, #4facfe, #00f2fe);
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    margin-top: 20px;
+  }
+  
+  .submit-review h2 {
+    color: #fff;
+    font-size: 1.5rem;
+    margin-bottom: 10px;
+  }
+  
+  .submit-review form {
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .submit-review input,
+  .submit-review textarea {
+    padding: 10px;
+    margin-bottom: 10px;
+    border: none;
+    border-radius: 5px;
+    box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.1);
+  }
+  
+  .submit-review input:focus,
+  .submit-review textarea:focus {
+    outline: none;
+    box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
+  }
+  
+  .submit-review button {
+    background: #ff416c;
+    background: linear-gradient(to right, #ff4b2b, #ff416c);
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background 0.3s ease;
+  }
+  
+  .submit-review button:hover {
+    background: #ff416c;
+    background: linear-gradient(to right, #ff4b2b, #ff416c);
+  }
